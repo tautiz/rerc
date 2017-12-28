@@ -1,0 +1,30 @@
+extends layout
+
+block content
+
+
+    div Uz #{EUR} &euro; galima nusipirkti :
+        b  #{EURBTC.rate * EUR} ₿
+    div Mano turimu ₿ verte &euro; : 
+        b #{BTCEUR.rate * BTC} &euro; =  
+        b #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿
+
+    div Seniau turejai :
+        b #{OLD_BTC} ₿
+    div Perpardaves gali tureti :
+        b #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿
+
+    if OLD_BTC > (EURBTC.rate * BTCEUR.rate * BTC)
+        h2.red Dabar neverta pirkti #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿ 
+    else
+        h2.green Dabar verta pirkti #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿
+
+    if BTCEUR.rate * BTC <= 2100
+        h2.red Dabar neverta parduoti ₿ uz #{BTCEUR.rate * BTC}
+    else
+        h2.green Dabar verta parduoti ₿ uz #{BTCEUR.rate * BTC}
+
+    div Bitkoinu nuostolis : 
+        b #{EURBTC.rate * EUR - BTC} ₿
+    div Euru nuostolis : 
+        b #{(EURBTC.rate * EUR - BTC) * BTCEUR.rate} &euro;
