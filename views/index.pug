@@ -2,29 +2,46 @@ extends layout
 
 block content
 
+    div Pardavimo kaina: #{BTCEUR.rate} &euro; = 1 ₿
+    div Pirkimo kaina: #{1 / EURBTC.rate} &euro; =  1 ₿
+
+    div Skirtumas: 
+        b #{(1 / EURBTC.rate - BTCEUR.rate)} &euro;
 
     div Uz #{EUR} &euro; galima nusipirkti :
         b  #{EURBTC.rate * EUR} ₿
+
     div Mano turimu ₿ verte &euro; : 
         b #{BTCEUR.rate * BTC} &euro; =  
         b #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿
 
     div Seniau turejai :
         b #{OLD_BTC} ₿
-    div Perpardaves gali tureti :
-        b #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿
+    
 
-    if OLD_BTC > (EURBTC.rate * BTCEUR.rate * BTC)
+    hr
+    <input ng-init="new_price='#{BTCEUR.rate * BTC}'" mg-model="new_price" type="hidden"/>
+    <span ng-bind="new_price" >TEST</span>
+
+    if OLD_BTC >= (BTCEUR.rate * BTC)
         h2.red Dabar neverta pirkti #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿ 
     else
-        h2.green Dabar verta pirkti #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿
+        h2.green Dabar verta pirkti #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿ 
 
-    if BTCEUR.rate * BTC <= 2100
-        h2.red Dabar neverta parduoti ₿ uz #{BTCEUR.rate * BTC}
+    if BTCEUR.rate * BTC <= ( (BTCEUR.rate * BTC) + (1 / EURBTC.rate - BTCEUR.rate))
+        h2.red Dabar neverta perparduoti ₿ uz #{BTCEUR.rate * BTC}
+        div Perpardaves gali tureti :
+            b #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿ 
+            if BTC >= (EURBTC.rate * BTCEUR.rate * BTC)
+                span.red #{BTC - (EURBTC.rate * BTCEUR.rate * BTC)} ₿  mažiau
+            else
+                span.green #{BTC - (EURBTC.rate * BTCEUR.rate * BTC)} ₿ daugiau
+            <span> Jų vertė <b>#{((EURBTC.rate * BTCEUR.rate * BTC) - BTC) * (1 / EURBTC.rate)} &euro;</b></span>
     else
-        h2.green Dabar verta parduoti ₿ uz #{BTCEUR.rate * BTC}
+        h2.green Dabar verta perparduoti ₿ uz #{BTCEUR.rate * BTC}
 
+    hr
     div Bitkoinu nuostolis : 
         b #{EURBTC.rate * EUR - BTC} ₿
     div Euru nuostolis : 
-        b #{(EURBTC.rate * EUR - BTC) * BTCEUR.rate} &euro;
+        b #{BTCEUR.rate * BTC - EUR} &euro; = #{EURBTC.rate * (BTCEUR.rate * BTC - EUR)} ₿

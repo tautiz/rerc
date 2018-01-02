@@ -7,9 +7,10 @@ var request = require('request');
 let EURBTC = {};
 let BTCEUR = {};
 
-let EUR = 2600;
+let OLD_EUR = 2600;
+let EUR = 2077.31;
 let OLD_BTC = 0.16902117;
-let BTC = 0.16815197;
+let BTC = 0.1706694;
 
 request('https://www.revolut.com/api/quote/internal/EURBTC', function (error, response, body) {
     if (!error && response.statusCode == 200) {
