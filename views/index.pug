@@ -2,46 +2,86 @@ extends layout
 
 block content
 
-    div Pardavimo kaina: #{BTCEUR.rate} &euro; = 1 ₿
-    div Pirkimo kaina: #{1 / EURBTC.rate} &euro; =  1 ₿
+    <span ng-init="bitcoin_rate='#{EURBTC.rate}'"</span>
+    <span ng-init="euro_rate='#{BTCEUR.rate}'"</span>
+    <span ng-init="current_bitcoin_deposit='#{BTC}'"</span>
+    <span ng-init="current_euro_deposit='#{EUR}'"</span>
 
-    div Skirtumas: 
-        b #{(1 / EURBTC.rate - BTCEUR.rate)} &euro;
+    <div class="container">
+        <div class="row">
+            div(class="col s5 z-depth-1") Pardavimo kaina: <span ng-init="selling_price='#{BTCEUR.rate}'" ng-bind="selling_price"></span> &euro; = 1 ₿                
+                span Siuo metu turiu: {{current_bitcoin_deposit}} ₿
+                if BTCEUR.rate * BTC <= ( (BTCEUR.rate * BTC) + (1 / EURBTC.rate - BTCEUR.rate))
+                    div(class="col s-12 red")
+                        h5 Dabar neverta perparduoti ₿ uz #{BTCEUR.rate * BTC}
+                    div Perpardaves gali tureti :
+                        b #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿ 
+                        if BTC >= (EURBTC.rate * BTCEUR.rate * BTC)
+                            span.red #{BTC - (EURBTC.rate * BTCEUR.rate * BTC)} ₿  mažiau
+                        else
+                            span.green #{BTC - (EURBTC.rate * BTCEUR.rate * BTC)} ₿ daugiau
+                        <span> Jų vertė <b>#{((EURBTC.rate * BTCEUR.rate * BTC) - BTC) * (1 / EURBTC.rate)} &euro;</b></span>
+                else
+                    div(class="col s-12 green")
+                        h5 Dabar verta perparduoti ₿ uz #{BTCEUR.rate * BTC}
+                br
+                div(class="col s-12 z-depth-1") 
+                    <span ng-init="current_balance='#{EUR}'"></span>
+                    <div class="input-field">
+                      <i class="material-icons prefix">euro_symbol</i>
+                      <input id="icon_prefix" ng-model="current_balance" type="text" class="validate">
+                      <label for="icon_prefix">Current ballance</label>
+                    </div>
+                    div Uz <span ng-bind="current_balance"></span> &euro; galima nusipirkti : <b>{{ bitcoin_rate * current_balance}} ₿</b>
+                    br
 
-    div Uz #{EUR} &euro; galima nusipirkti :
-        b  #{EURBTC.rate * EUR} ₿
 
-    div Mano turimu ₿ verte &euro; : 
-        b #{BTCEUR.rate * BTC} &euro; =  
-        b #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿
 
-    div Seniau turejai :
-        b #{OLD_BTC} ₿
-    
+            div(class="col s2 center-align") Skirtumas: 
+                b {{(selling_price - buying_price)}} &euro;
 
-    hr
-    <input ng-init="new_price='#{BTCEUR.rate * BTC}'" mg-model="new_price" type="hidden"/>
-    <span ng-bind="new_price" >TEST</span>
+                div(class="") Currently in stock
+                    <div class="switch center-align">
+                        <label>
+                            span ₿
+                            <input type="checkbox" mg-model="currrent_stock">
+                            <span class="lever"></span>
+                            span &euro;
+                        </label>
+                    </div>
+                    <span ng-bind="currrent_stock"></span>
+                    br
 
-    if OLD_BTC >= (BTCEUR.rate * BTC)
-        h2.red Dabar neverta pirkti #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿ 
-    else
-        h2.green Dabar verta pirkti #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿ 
+            div(class="col s5 z-depth-1 right-align") Pirkimo kaina: <span ng-init="buying_price='#{(1 / EURBTC.rate)}'" ng-bind="buying_price"></span> &euro; =  1 ₿ 
+                span Siuo metu turiu: {{current_euro_deposit}} &euro;
+                if OLD_BTC >= (BTCEUR.rate * BTC)
+                    div(class="col s-12 red")
+                        h5 Dabar neverta pirkti #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿ 
+                else
+                    div(class="col s-12 green")
+                        h5 Dabar verta pirkti #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿ 
+        </div>
 
-    if BTCEUR.rate * BTC <= ( (BTCEUR.rate * BTC) + (1 / EURBTC.rate - BTCEUR.rate))
-        h2.red Dabar neverta perparduoti ₿ uz #{BTCEUR.rate * BTC}
-        div Perpardaves gali tureti :
-            b #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿ 
-            if BTC >= (EURBTC.rate * BTCEUR.rate * BTC)
-                span.red #{BTC - (EURBTC.rate * BTCEUR.rate * BTC)} ₿  mažiau
-            else
-                span.green #{BTC - (EURBTC.rate * BTCEUR.rate * BTC)} ₿ daugiau
-            <span> Jų vertė <b>#{((EURBTC.rate * BTCEUR.rate * BTC) - BTC) * (1 / EURBTC.rate)} &euro;</b></span>
-    else
-        h2.green Dabar verta perparduoti ₿ uz #{BTCEUR.rate * BTC}
+        
 
-    hr
-    div Bitkoinu nuostolis : 
-        b #{EURBTC.rate * EUR - BTC} ₿
-    div Euru nuostolis : 
-        b #{BTCEUR.rate * BTC - EUR} &euro; = #{EURBTC.rate * (BTCEUR.rate * BTC - EUR)} ₿
+        div Mano turimu ₿ verte &euro; : 
+            b #{BTCEUR.rate * BTC} &euro; =  
+            b #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿
+
+        div Seniau turejai :
+            b #{OLD_BTC} ₿
+        
+
+        hr
+        <input ng-init="new_price='#{BTCEUR.rate * BTC}'" mg-model="new_price" type="hidden"/>
+        <span ng-bind="new_price" >TEST</span>
+
+
+
+        hr
+        div Bitkoinu nuostolis : 
+            b #{EURBTC.rate * EUR - BTC} ₿
+        div Euru nuostolis : 
+            b #{BTCEUR.rate * BTC - EUR} &euro; = #{EURBTC.rate * (BTCEUR.rate * BTC - EUR)} ₿
+
+    </div>
