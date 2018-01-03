@@ -48,14 +48,26 @@ router.get('/', function(req, res, next) {
     request('https://www.revolut.com/api/quote/internal/EURBTC', function (error, response, body) {
         if (!error && response.statusCode == 200) {
             EURBTC = JSON.parse(body)
-            console.log(EURBTC.rate)
-         }
+            console.log(EURBTC.rate);
+            slack.api('chat.postMessage', {
+                text:'Current [EURBTC] rate: '+EURBTC.rate,
+                channel:'#general'
+            }, function(err, response){
+                console.log(response);
+            });
+        }
     })
 
     request('https://www.revolut.com/api/quote/internal/BTCEUR', function (error, response, body) {
         if (!error && response.statusCode == 200) {
             BTCEUR = JSON.parse(body)
-            console.log(BTCEUR.rate)      
+            console.log(BTCEUR.rate);
+            slack.api('chat.postMessage', {
+                text:'Current [BTCEUR] rate: '+BTCEUR.rate,
+                channel:'#general'
+            }, function(err, response){
+                console.log(response);
+            });
         }
     })
 
