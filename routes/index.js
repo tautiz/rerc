@@ -85,6 +85,7 @@ makeRequest();
 var minutes = 5;
 var miliseconds = minutes * 60 * 1000;
 setInterval(makeRequest, miliseconds);
+var history = [];
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -98,6 +99,28 @@ router.get('/', function (req, res, next) {
         OLD_BTC: OLD_BTC,
         OLD_EUR: OLD_EUR
     })
+})
+
+/* GET home page. */
+router.get('/data.json', function (req, res, next) {
+    MongoClient.connect(url, function(err, client) {
+        const col = client.db(dbName).collection('rates');
+        var myobj = { BTCEUR: BTCEUR, current_time_stamp: current_time_stamp };
+        col.find().toArray(function(err, result) {
+            history = result;
+        });
+    });
+    var data = [];
+    for(key in history) {
+        element = history[key];
+        if (typeof element.BTCEUR !== 'undefined'){
+            rate = element.BTCEUR.rate;
+            data.push([element.current_time_stamp, rate]);
+        }
+    }
+    console.log(data);
+
+    res.render('data', {json:data})
 })
 
 module.exports = router
