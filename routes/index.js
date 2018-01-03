@@ -22,13 +22,6 @@ slack.api('users.list', function (err, response) {
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/mydb";
 
-MongoClient.connect(url, function(err, db) {
-    if (err) throw err;
-    console.log("Database created!");
-    db.close();
-});
-
-
 function makeRequest()
 {
     current_time_stamp = Date.now();
@@ -58,6 +51,16 @@ function makeRequest()
             })
         }
     })
+
+    MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        var myobj = { BTCEUR: BTCEUR, EURBTC: EURBTC, current_time_stamp: current_time_stamp };
+        db.collection("customers").insertOne(myobj, function(err, res) {
+            if (err) throw err;
+            console.log("Latest Rates stored");
+            db.close();
+        });
+    });
 }
 
 makeRequest();
