@@ -4,6 +4,7 @@ block content
 
     <span ng-init="bitcoin_rate='#{EURBTC.rate}'"</span>
     <span ng-init="euro_rate='#{BTCEUR.rate}'"</span>
+    <span ng-init="old_bitcoin_deposit='#{OLD_BTC}'"</span>
     <span ng-init="current_bitcoin_deposit='#{BTC}'"</span>
     <span ng-init="current_euro_deposit='#{EUR}'"</span>
     span Last time: {{ #{current_time_stamp} | date : 'yyyy-M-d H:mm:ss'}}
@@ -51,26 +52,51 @@ block content
                         </label>
                     </div>
                     <span ng-bind="currrent_stock"></span>
-                    br
+                    hr
+                    <div class="input-field col s-6" ng-init="bitcoin_counter='0.001'">
+                        <i class="material-icons prefix">₿</i>
+                        <input id="icon_prefix" ng-model="bitcoin_counter" type="text" class="validate">
+                        <label for="icon_prefix">Bitkonu kiekis</label>
+                    </div>
+                    span Verte: {{ euro_rate * bitcoin_counter }} &euro;
+                    hr
 
-            div(class="col s5 z-depth-1 right-align") Pirkimo kaina: <span ng-init="buying_price='#{(1 / EURBTC.rate)}'" ng-bind="buying_price"></span> &euro; =  1 ₿ 
+            div(class="col s5 z-depth-1 right-align") Pirkimo kaina: <span ng-init="buying_price='#{(1 / EURBTC.rate)}'" ng-bind="buying_price"></span> &euro; =  1 ₿
                 span Siuo metu turiu: {{current_euro_deposit}} &euro;
-                if OLD_BTC >= (BTCEUR.rate * BTC)
-                    div(class="col s-12 red")
-                        h5 Dabar neverta pirkti #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿ 
-                else
-                    div(class="col s-12 green")
-                        h5 Dabar verta pirkti #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿ 
-        </div>
+                div(class="row")
+                    if OLD_BTC >= (BTCEUR.rate * BTC)
+                        div(class="col s-12 red")
+                            h5 Dabar neverta pirkti #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿
+                    else
+                        div(class="col s-12 green")
+                            h5 Dabar verta pirkti #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿
 
-        
+                div(class="row z-depth-3")
+                    div(class="center-align container") <br>Kad uzdirbtum <b>{{ wage }} &euro;</b> uz <b>{{ current_bitcoin_deposit }} ₿</b> pardavimo kursas turi būti <b>{{ (wage / current_bitcoin_deposit).toFixed(3) }} &euro;</b>
+                    <span ng-init="wage='#{EUR+100}'"></span>
+                    <div class="input-field col s-6">
+                        <i class="material-icons prefix">euro_symbol</i>
+                        <input id="icon_prefix" ng-model="wage" type="text" class="validate">
+                        <label for="icon_prefix">Planuojamas uzdarbis</label>
+                    </div>
+                    <div class="input-field col s-6">
+                        <i class="material-icons prefix">₿</i>
+                        <input id="icon_prefix" ng-model="current_bitcoin_deposit" type="text" class="validate">
+                        <label for="icon_prefix">Bitkonu kiekis</label>
+                    </div>
 
-        div Mano turimu ₿ verte &euro; : 
-            b #{BTCEUR.rate * BTC} &euro; =  
-            b #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿
+                div(class="row z-depth-1")
+                    div(class="center-align") Mano turimu ₿ verte &euro; :
+                        b #{BTCEUR.rate * BTC} &euro;
+                        | &nbsp;siuo metu si suma verta&nbsp;
+                        b #{(EURBTC.rate * BTCEUR.rate * BTC)} ₿
 
-        div Seniau turejai :
-            b #{OLD_BTC} ₿
+                    div(class="center-align") Seniau turejau :
+                        b #{OLD_BTC} ₿
+                        | &nbsp;prieaugis&nbsp;
+                        b {{ current_bitcoin_deposit - old_bitcoin_deposit }}
+                        | &nbsp;siuo metu jo verte&nbsp;
+                        b {{ (current_bitcoin_deposit - old_bitcoin_deposit) * euro_rate }}
         
 
         hr
