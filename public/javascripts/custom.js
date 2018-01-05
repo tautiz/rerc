@@ -2,7 +2,7 @@ $(document).ready(function () {
     Materialize.updateTextFields();
     $.getJSON('/data.json', function (data) {
         console.log(data);
-
+/*
         Highcharts.chart('container', {
             chart: {
                 zoomType: 'x'
@@ -56,6 +56,57 @@ $(document).ready(function () {
                 type: 'area',
                 name: 'BTC to EUR',
                 data: data
+            }]
+        });
+        */
+
+        Highcharts.chart('container', {
+
+            chart: {
+                type: 'arearange',
+                zoomType: 'x'
+            },
+            title: {
+                text: 'BTC to EUR exchange rate over time'
+            },
+            subtitle: {
+                text: document.ontouchstart === undefined ?
+                    'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+            },
+
+            xAxis: {
+                type: 'datetime'
+            },
+
+            yAxis: {
+                title: {
+                    text: 'Exchange rate'
+                }
+            },
+
+            tooltip: {
+                crosshairs: true,
+                shared: true,
+                valueSuffix: ' EUR'
+            },
+
+            legend: {
+                enabled: false
+            },
+            series: [{
+                name: 'BTC to EUR',
+                data: data,
+                type: 'arearange',
+                lineWidth: 0,
+                linkedTo: ':previous',
+                color: Highcharts.getOptions().colors[0],
+                fillOpacity: 0.3,
+                zIndex: 0,
+                marker: {
+                    fillColor: 'white',
+                    lineWidth: 2,
+                    lineColor: Highcharts.getOptions().colors[0]
+                }
             }]
         });
     });
