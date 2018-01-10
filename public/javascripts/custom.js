@@ -110,4 +110,15 @@ $(document).ready(function () {
             }]
         });
     });
-})
+});
+
+var app = angular.module("rercApp", []);
+
+app.filter('beforeDigit', function ($filter) {
+    return function (input) {
+        if (input>1000)
+            return (input % 1000)
+        elseif(input<1000)
+        return input;
+    };
+});

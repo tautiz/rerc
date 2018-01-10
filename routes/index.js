@@ -8,9 +8,9 @@ let EURBTC = {}
 let BTCEUR = {}
 
 let OLD_EUR = 2600
-let EUR = 2077.31
+let EUR = 1000
 let OLD_BTC = 0.16902117
-let BTC = 0.1706694
+let BTC = 0.15846423
 let current_time_stamp = Date.now();
 
 apiToken = 'xoxp-Private-Key'
