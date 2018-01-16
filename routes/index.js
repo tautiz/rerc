@@ -38,52 +38,37 @@ function makeRequest()
 {
     current_time_stamp = Date.now();
 
-    request('https://www.revolut.com/api/quote/internal/EURBTC', function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            EURBTC = JSON.parse(body);
-//            console.log(EURBTC.rate);
+    getRate('EUR', 'BTC');
+    getRate('EUR', 'ETH');
 
-//            slack.api('chat.postMessage', {
-//                text: 'Current [EURBTC] rate: ' + EURBTC.rate,
-//                channel: '#general'
-//            }, function (err, response) {
-//                console.log(response)
-//            });
+    getRate('BTC', 'ETH');
+    getRate('BTC', 'EUR');
 
-            MongoClient.connect(url, function(err, client) {
-                const col = client.db(dbName).collection('rates');
-                var myobj = { EURBTC: EURBTC, current_time_stamp: current_time_stamp };
-                col.insertOne(myobj, {w:1}, function(err, result) {
-                    console.log(result.length);
+    getRate('ETH', 'BTC');
+    getRate('ETH', 'EUR');
+
+    function getRate(from, to){
+        var fromTo = from + to;
+        request('https://www.revolut.com/api/quote/internal/'+fromTo, function (error, response, body) {
+            if (!error && response.statusCode === 200) {
+                var rateObj = JSON.parse(body);
+                MongoClient.connect(url, function (err, client) {
+                    const col = client.db(dbName).collection('rates');
+                    var insertObj = {};
+                    insertObj[fromTo] = rateObj;
+                    insertObj['current_time_stamp'] = current_time_stamp;
+
+                    col.insertOne(insertObj, {w: 1}, function (err, result) {
+                        console.log(result.ops);
+                    });
                 });
-            });
-        }
-    })
-
-    request('https://www.revolut.com/api/quote/internal/BTCEUR', function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            BTCEUR = JSON.parse(body);
-//            console.log(BTCEUR.rate);
-//            slack.api('chat.postMessage', {
-//                text: 'Current [BTCEUR] rate: ' + BTCEUR.rate,
-//                channel: '#general'
-//            }, function (err, response) {
-//                console.log(response)
-//            });
-
-            MongoClient.connect(url, function(err, client) {
-                const col = client.db(dbName).collection('rates');
-                var myobj = { BTCEUR: BTCEUR, current_time_stamp: current_time_stamp };
-                col.insertOne(myobj, {w:1}, function(err, result) {
-                    console.log(result.ops);
-                });
-            });
-        }
-    })
+            }
+        })
+    }
 }
 
 makeRequest();
-var minutes = 5;
+var minutes = 10;
 var miliseconds = minutes * 60 * 1000;
 setInterval(makeRequest, miliseconds);
 var history = [];
@@ -115,6 +100,14 @@ function findRatesByTimestamp(array, timestamp)
                 kk = 'BTCEUR';
             } else if(typeof elem.EURBTC !== 'undefined') {
                 kk = 'EURBTC';
+            } else if(typeof elem.EURETH !== 'undefined') {
+                kk = 'EURETH';
+            } else if(typeof elem.ETHEUR !== 'undefined') {
+                kk = 'ETHEUR';
+            } else if(typeof elem.ETHBTC !== 'undefined') {
+                kk = 'ETHBTC';
+            } else if(typeof elem.BTCETH !== 'undefined') {
+                kk = 'BTCETH';
             } else {
                 kk = 'error';
             }
@@ -128,6 +121,9 @@ function findRatesByTimestamp(array, timestamp)
 /* GET home page. */
 router.get('/data.json', function (req, res, next) {
     var data = [];
+    var duom = [];
+    var rates = {};
+
     MongoClient.connect(url, function(err, client) {
         const col = client.db(dbName).collection('rates');
         col.find({}).toArray(function(err, result) {
@@ -138,19 +134,35 @@ router.get('/data.json', function (req, res, next) {
     for(key in history) {
         element = history[key];
         if (typeof element.BTCEUR !== 'undefined') {
-            rates = findRatesByTimestamp(history, element.current_time_stamp);
+            var ratio = findRatesByTimestamp(history, element.current_time_stamp);
 
-            sellrate = rates.BTCEUR.rate;
-            if (typeof rates.EURBTC === 'undefined') {
-                buyrate = null;
-            } else {
-                buyrate = (1 / rates.EURBTC.rate);
+            var sellEURBTCrate = ratio.BTCEUR.rate;
+            var buyEURBTCrate = null;
+            if (typeof ratio.EURBTC !== 'undefined') {
+                buyEURBTCrate = (1 / ratio.EURBTC.rate);
             }
 
-            data.push([element.current_time_stamp, sellrate, buyrate]);
+            data.push([element.current_time_stamp, sellEURBTCrate, buyEURBTCrate]);
         }
     }
-    res.render('data', {json:data})
+    rates['eur'] = data;
+
+    for(key in history) {
+        element = history[key];
+        if (typeof element.BTCETH !== 'undefined') {
+            var ratio2 = findRatesByTimestamp(history, element.current_time_stamp);
+            var sellBTCETHrate = ratio2.BTCETH.rate;
+            var buyBTCETHrate = null;
+            if (typeof ratio2.ETHBTC !== 'undefined') {
+                buyBTCETHrate = (1 / ratio2.ETHBTC.rate);
+            }
+
+            duom.push([element.current_time_stamp, sellBTCETHrate, buyBTCETHrate]);
+        }
+    }
+    rates['eth'] = duom;
+
+    res.render('data', {json: rates})
 })
 
 module.exports = router

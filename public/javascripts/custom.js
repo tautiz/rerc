@@ -78,11 +78,18 @@ $(document).ready(function () {
                 type: 'datetime'
             },
 
-            yAxis: {
-                title: {
-                    text: 'Exchange rate'
+            yAxis: [
+                {
+                    title: {
+                        text: 'Exchange rate'
+                    }
+                },
+                {
+                    title: {
+                        text: 'Exchange rate2'
+                    }
                 }
-            },
+            ],
 
             tooltip: {
                 crosshairs: true,
@@ -93,21 +100,38 @@ $(document).ready(function () {
             legend: {
                 enabled: false
             },
-            series: [{
-                name: 'BTC to EUR',
-                data: data,
-                type: 'arearange',
-                lineWidth: 0,
-                linkedTo: ':previous',
-                color: Highcharts.getOptions().colors[0],
-                fillOpacity: 0.3,
-                zIndex: 0,
-                marker: {
-                    fillColor: 'white',
-                    lineWidth: 2,
-                    lineColor: Highcharts.getOptions().colors[0]
+            series: [
+                {
+                    name: 'BTC -> EUR -> BTC',
+                    data: data.eur,
+                    type: 'arearange',
+                    yAxis: 1,
+                    lineWidth: 0,
+                    linkedTo: ':previous',
+                    color: Highcharts.getOptions().colors[0],
+                    fillOpacity: 0.3,
+                    zIndex: 0,
+                    marker: {
+                        fillColor: 'white',
+                        lineWidth: 2,
+                        lineColor: Highcharts.getOptions().colors[0]
+                    }
+                },
+                {
+                    name: 'BTC -> ETH -> BTC',
+                    data: data.eth,
+                    lineWidth: 0,
+                    linkedTo: ':previous',
+                    color: Highcharts.getOptions().colors[0],
+                    fillOpacity: 0.3,
+                    zIndex: 0,
+                    marker: {
+                        fillColor: 'white',
+                        lineWidth: 2,
+                        lineColor: Highcharts.getOptions().colors[0]
+                    }
                 }
-            }]
+            ]
         });
     });
 });
