@@ -1,5 +1,6 @@
 $(document).ready(function () {
     Materialize.updateTextFields();
+    var chart;
     $.getJSON('/data.json', function (data) {
         console.log(data);
 /*
@@ -60,7 +61,7 @@ $(document).ready(function () {
         });
         */
 
-        Highcharts.chart('container', {
+        chart = Highcharts.chart('container', {
 
             chart: {
                 type: 'arearange',
@@ -73,7 +74,6 @@ $(document).ready(function () {
                 text: document.ontouchstart === undefined ?
                     'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
             },
-
             xAxis: {
                 type: 'datetime'
             },
@@ -81,50 +81,82 @@ $(document).ready(function () {
             yAxis: [
                 {
                     title: {
-                        text: 'Exchange rate'
+                        text: 'Bitcoin rate'
                     }
                 },
                 {
                     title: {
-                        text: 'Exchange rate2'
+                        text: 'Etherium rate'
+                    }
+                },
+                {
+                    title: {
+                        text: 'Litecoin rate'
                     }
                 }
             ],
 
             tooltip: {
-                crosshairs: true,
+                // pointFormat: "{series.name}<br/>Sell: {point.y:.2f} €<br/>Buy: {point.y:.2f} €",
+                crosshairs: [true,true],
                 shared: true,
-                valueSuffix: ' EUR'
+                split: true,
+                distance: 30,
+                padding: 5,
+                valueSuffix: ' EUR<br/>'
+            },
+            point: {
+                events: {
+                    onMouseOver: function (e) {
+                        console.log(e);
+                    }
+                }
             },
 
             legend: {
-                enabled: false
+                enabled: true
             },
             series: [
                 {
-                    name: 'BTC -> EUR -> BTC',
+                    name: 'BTC -> EUR -> BTC<br>',
                     data: data.eur,
                     type: 'arearange',
                     yAxis: 1,
                     lineWidth: 0,
                     linkedTo: ':previous',
-                    color: Highcharts.getOptions().colors[0],
+                    color: Highcharts.getOptions().colors[3],
                     fillOpacity: 0.3,
-                    zIndex: 0,
+                    zIndex: 1,
                     marker: {
                         fillColor: 'white',
                         lineWidth: 2,
-                        lineColor: Highcharts.getOptions().colors[0]
+                        lineColor: Highcharts.getOptions().colors[3]
                     }
                 },
                 {
-                    name: 'BTC -> ETH -> BTC',
+                    name: 'BTC -> ETH -> BTC<br>',
+                    type: 'arearange',
                     data: data.eth,
-                    lineWidth: 0,
+                    lineWidth: 1,
+                    linkedTo: ':previous',
+                    color: Highcharts.getOptions().colors[1],
+                    fillOpacity: 0.3,
+                    zIndex: 2,
+                    marker: {
+                        fillColor: 'white',
+                        lineWidth: 2,
+                        lineColor: Highcharts.getOptions().colors[1]
+                    }
+                },
+                {
+                    name: 'BTC -> LTC -> BTC<br>',
+                    type: 'arearange',
+                    data: data.ltc,
+                    lineWidth: 1,
                     linkedTo: ':previous',
                     color: Highcharts.getOptions().colors[0],
                     fillOpacity: 0.3,
-                    zIndex: 0,
+                    zIndex: 3,
                     marker: {
                         fillColor: 'white',
                         lineWidth: 2,
@@ -134,6 +166,17 @@ $(document).ready(function () {
             ]
         });
     });
+});
+
+// button handler
+var i = 0;
+$('#button').click(function () {
+
+    if (i === chart.series[0].data.length) {
+        i = 0;
+    }
+    chart.series[0].data[i].select();
+    i += 1;
 });
 
 var app = angular.module("rercApp", []);

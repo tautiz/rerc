@@ -2,13 +2,13 @@ extends layout
 
 block content
 
-    <span ng-init="bitcoin_rate='#{EURBTC.rate}'"</span>
-    <span ng-init="BTC_buy_price='#{(1 / EURBTC.rate)}'"</span>
-    <span ng-init="BTC_selling_price='#{BTCEUR.rate}'"</span>
-    <span ng-init="old_bitcoin_deposit='#{OLD_BTC}'"</span>
-    <span ng-init="current_bitcoin_deposit='#{BTC}'"</span>
-    <span ng-init="old_euro_deposit='#{OLD_EUR}'"</span>
-    <span ng-init="current_euro_deposit='#{EUR}'"</span>
+    <span ng-init="bitcoin_rate='#{EURBTC.rate}'"></span>
+    <span ng-init="BTC_buy_price='#{(1 / EURBTC.rate)}'"></span>
+    <span ng-init="BTC_selling_price='#{BTCEUR.rate}'"></span>
+    <span ng-init="old_bitcoin_deposit='#{OLD_BTC}'"></span>
+    <span ng-init="current_bitcoin_deposit='#{BTC}'"></span>
+    <span ng-init="old_euro_deposit='#{OLD_EUR}'"></span>
+    <span ng-init="current_euro_deposit='#{EUR}'"></span>
 
     span Last time: {{ #{current_time_stamp} | date : 'yyyy-M-d H:mm:ss'}}
 
@@ -89,3 +89,4 @@ block content
     </div>
 
     <div id="container" style="width:100%; height:400px;"></div>
+    <button id="button" class="autocompare">Select point</button>
