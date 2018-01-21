@@ -83,17 +83,19 @@ $(document).ready(function () {
                     title: {
                         text: 'Bitcoin rate'
                     }
-                },
+                }
+                ,
                 {
                     title: {
                         text: 'Etherium rate'
                     }
-                },
-                {
-                    title: {
-                        text: 'Litecoin rate'
-                    }
                 }
+                // ,
+                // {
+                //     title: {
+                //         text: 'Litecoin rate'
+                //     }
+                // }
             ],
 
             tooltip: {
@@ -105,14 +107,6 @@ $(document).ready(function () {
                 padding: 5,
                 valueSuffix: ' EUR<br/>'
             },
-            point: {
-                events: {
-                    onMouseOver: function (e) {
-                        console.log(e);
-                    }
-                }
-            },
-
             legend: {
                 enabled: true
             },
@@ -132,37 +126,38 @@ $(document).ready(function () {
                         lineWidth: 2,
                         lineColor: Highcharts.getOptions().colors[3]
                     }
-                },
-                {
-                    name: 'BTC -> ETH -> BTC<br>',
-                    type: 'arearange',
-                    data: data.eth,
-                    lineWidth: 1,
-                    linkedTo: ':previous',
-                    color: Highcharts.getOptions().colors[1],
-                    fillOpacity: 0.3,
-                    zIndex: 2,
-                    marker: {
-                        fillColor: 'white',
-                        lineWidth: 2,
-                        lineColor: Highcharts.getOptions().colors[1]
-                    }
-                },
-                {
-                    name: 'BTC -> LTC -> BTC<br>',
-                    type: 'arearange',
-                    data: data.ltc,
-                    lineWidth: 1,
-                    linkedTo: ':previous',
-                    color: Highcharts.getOptions().colors[0],
-                    fillOpacity: 0.3,
-                    zIndex: 3,
-                    marker: {
-                        fillColor: 'white',
-                        lineWidth: 2,
-                        lineColor: Highcharts.getOptions().colors[0]
-                    }
                 }
+                // ,
+                // {
+                //     name: 'BTC -> ETH -> BTC<br>',
+                //     type: 'arearange',
+                //     data: data.eth,
+                //     lineWidth: 1,
+                //     linkedTo: ':previous',
+                //     color: Highcharts.getOptions().colors[1],
+                //     fillOpacity: 0.3,
+                //     zIndex: 2,
+                //     marker: {
+                //         fillColor: 'white',
+                //         lineWidth: 2,
+                //         lineColor: Highcharts.getOptions().colors[1]
+                //     }
+                // },
+                // {
+                //     name: 'BTC -> LTC -> BTC<br>',
+                //     type: 'arearange',
+                //     data: data.ltc,
+                //     lineWidth: 1,
+                //     linkedTo: ':previous',
+                //     color: Highcharts.getOptions().colors[0],
+                //     fillOpacity: 0.3,
+                //     zIndex: 3,
+                //     marker: {
+                //         fillColor: 'white',
+                //         lineWidth: 2,
+                //         lineColor: Highcharts.getOptions().colors[0]
+                //     }
+                // }
             ]
         });
     });
