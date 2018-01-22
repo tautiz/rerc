@@ -1,46 +1,54 @@
 $(document).ready(function () {
     Materialize.updateTextFields()
-    var chart
+    var BTCchart
     $.getJSON('/data.json', function (data) {
-        chart = Highcharts.chart('container', {
+        BTCchart = Highcharts.chart('container', {
             chart: {
+                type: 'spline',
                 zoomType: 'x'
             },
             title: {
                 text: 'BTC to EUR exchange rate over time'
             },
-            subtitle: {
-                text: document.ontouchstart === undefined ?
-                    'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
-            },
             xAxis: {
-                type: 'datetime'
+                type: 'datetime',
+                dateTimeLabelFormats: {
+                    day: '%e. %b',
+                    month: '%e. %b',
+                    year: '%b'
+                },
+                title: {
+                    text: 'Date'
+                }
             },
 
             yAxis: [
                 {
                     title: {
-                        text: 'Bitcoin buy rate'
+                        text: 'Rates'
                     }
-                }
-                ,
+                },
                 {
                     title: {
-                        text: 'Bitcoin sell rate'
+                        text: 'Rates'
                     }
                 }
             ],
 
             tooltip: {
                 crosshairs: [true, true],
-                shared: false,
                 split: false,
-                distance: 30,
-                padding: 5,
-                valueSuffix: ' EUR<br/>'
+                valueSuffix: ' €'
             },
             legend: {
                 enabled: true
+            },
+            plotOptions: {
+                spline: {
+                    marker: {
+                        enabled: true
+                    }
+                }
             },
             series: [
                 {
