@@ -1,0 +1,8 @@
+webhookUrl="<web_hook_url>"
+
+[rulesToMonitor]
+; Possible variants:
+; EURBTC or BTCEUR
+; EURETH or ETHEUR
+; EURLTC or LTCEUR
+expression = "BTCEUR >= 10000"
