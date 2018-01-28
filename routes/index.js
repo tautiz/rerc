@@ -1,12 +1,10 @@
 let express = require('express');
 let router = express.Router();
 let request = require('request');
-//let Slack = require('slack-node');
 let fs = require('fs'),
     ini = require('ini');
 
 const MongoClient = require('mongodb').MongoClient;
-
 
 let EURBTC = {};
 let BTCEUR = {};
@@ -20,12 +18,6 @@ let current_time_stamp = Date.now();
 let currencies = ['BTC', 'ETH', 'LTC'];
 let currenciesToCompareWith = ['EUR'];
 
-//apiToken = 'xoxp-Private-Key'
-//slack = new Slack(apiToken)
-//slack.api('users.list', function (err, response) {
-//    console.log(response)
-//})
-
 const url = 'mongodb://localhost:27017';
 // Database Name
 const dbName = 'rerc';
@@ -36,7 +28,7 @@ MongoClient.connect(url, function (err, client) {
     const adminDb = client.db(dbName).admin();
     // List all the available databases
     adminDb.listDatabases(function (err, dbs) {
-        console.log(dbs);
+        console.info("LIST OF DB's ", dbs, "\n");
         client.close();
     })
 });
@@ -48,8 +40,8 @@ function makeRequest() {
         let currencyA = currencies[i];
         for (j in currenciesToCompareWith) {
             let currencyB = currenciesToCompareWith[j];
-            saveRateToDB(currencyA, currencyB);
-            saveRateToDB(currencyB, currencyA);
+            getAndSaveRateToDB(currencyA, currencyB);
+            getAndSaveRateToDB(currencyB, currencyA);
         }
     }
 }
@@ -65,7 +57,7 @@ function evalExpression(fromTo, rateObj) {
     return expression;
 }
 
-function saveRateToDB(from, to) {
+function getAndSaveRateToDB(from, to) {
     let fromTo = from + to;
     request('https://www.revolut.com/api/quote/internal/' + fromTo, function (error, response, body) {
         if (!error && response.statusCode === 200) {
@@ -77,7 +69,7 @@ function saveRateToDB(from, to) {
                 insertObj['current_time_stamp'] = current_time_stamp;
 
                 col.insertOne(insertObj, {w: 1}, function (err, result) {
-                    console.log(result.ops);
+                    console.info("Saved to DB: ", result.ops, "\n");
                 })
             });
 
@@ -97,12 +89,11 @@ let history = [];
 function triggerWebHook(data) {
     let config = ini.parse(fs.readFileSync('./params.ini', 'utf-8'));
     let url = config.webhookUrl;
-    request.post(url, {json: true}, (err, res, body) => {
+    request.post(url, { json: data }, (err, res, body) => {
         if (err) {
-            return console.log(err);
+            return console.log(err, "\n");
         }
-        console.log(body.url);
-        console.log(body);
+        console.info(body, '\n', data, '\n');
     });
 }
 
@@ -121,7 +112,7 @@ router.get('/', function (req, res, next) {
             getRateByTime('EURBTC', searchTimeStamp, function (EURBTCRate) {
                 if (typeof EURBTCRate.EURBTC !== 'undefined') {
                     EURBTC = EURBTCRate.EURBTC.rate;
-                    console.log("Rates", EURBTC, BTCEUR);
+                    // console.log("Rates", EURBTC, BTCEUR);
 
                     res.render('index', {
                         title: '[RERC]',
