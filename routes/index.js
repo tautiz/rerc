@@ -6,9 +6,6 @@ let fs = require('fs'),
 
 const MongoClient = require('mongodb').MongoClient;
 
-let EURBTC = {};
-let BTCEUR = {};
-
 let OLD_EUR = 2600;
 let EUR = 1000;
 let OLD_BTC = 0.16902117;
@@ -99,12 +96,22 @@ function triggerWebHook(data) {
 
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('/', function (req, res) {
 
     searchTimeStamp = current_time_stamp - (5 * 60 * 1000);
 
     let BTCEUR = -1;
     let EURBTC = -1;
+    let responseData = {
+        title: '[RERC - Missing data]',
+        BTCEUR: 0,
+        EURBTC: 0,
+        EUR: 0,
+        BTC: 0,
+        current_time_stamp: 0,
+        OLD_BTC: 0,
+        OLD_EUR: 0
+    };
 
     getRateByTime('BTCEUR', searchTimeStamp, function (BTCEURRate) {
         if (typeof BTCEURRate.BTCEUR !== 'undefined') {
@@ -112,9 +119,7 @@ router.get('/', function (req, res, next) {
             getRateByTime('EURBTC', searchTimeStamp, function (EURBTCRate) {
                 if (typeof EURBTCRate.EURBTC !== 'undefined') {
                     EURBTC = EURBTCRate.EURBTC.rate;
-                    // console.log("Rates", EURBTC, BTCEUR);
-
-                    res.render('index', {
+                    responseData = {
                         title: '[RERC]',
                         BTCEUR: BTCEUR,
                         EURBTC: EURBTC,
@@ -123,77 +128,22 @@ router.get('/', function (req, res, next) {
                         current_time_stamp: current_time_stamp,
                         OLD_BTC: OLD_BTC,
                         OLD_EUR: OLD_EUR
-                    })
-                } else {
-                    res.render('index', {
-                        title: '[RERC - Missing data]',
-                        BTCEUR: 0,
-                        EURBTC: 0,
-                        EUR: 0,
-                        BTC: 0,
-                        current_time_stamp: 0,
-                        OLD_BTC: 0,
-                        OLD_EUR: 0
-                    })
+                    };
                 }
             })
-        } else {
-            res.render('index', {
-                title: '[RERC - Missing data]',
-                BTCEUR: 0,
-                EURBTC: 0,
-                EUR: 0,
-                BTC: 0,
-                current_time_stamp: 0,
-                OLD_BTC: 0,
-                OLD_EUR: 0
-            })
         }
+
+        res.render('index', responseData)
     })
 });
 
-function findRatesByTimestamp(array, timestamp) {
-    let element = {};
-    for (key in array) {
-        let elem = array[key];
-        if (elem.current_time_stamp === timestamp) {
-            delete elem._id;
-            let kk = '';
-
-            if (typeof elem.BTCEUR !== 'undefined') {
-                kk = 'BTCEUR'
-            } else if (typeof elem.EURBTC !== 'undefined') {
-                kk = 'EURBTC'
-            } else if (typeof elem.EURETH !== 'undefined') {
-                kk = 'EURETH'
-            } else if (typeof elem.ETHEUR !== 'undefined') {
-                kk = 'ETHEUR'
-            } else if (typeof elem.ETHEUR !== 'undefined') {
-                kk = 'ETHEUR'
-            } else if (typeof elem.BTCETH !== 'undefined') {
-                kk = 'BTCETH'
-            } else if (typeof elem.LTCEUR !== 'undefined') {
-                kk = 'LTCEUR'
-            } else if (typeof elem.BTCLTC !== 'undefined') {
-                kk = 'BTCLTC'
-            } else {
-                kk = 'error'
-            }
-            element[kk] = elem[kk];
-        }
-        element.current_time_stamp = elem.current_time_stamp
-    }
-    return element
-}
-
 function getRateByTime(searchRate, timestamp, calback) {
-    let rez = {};
     MongoClient.connect(url, function (err, client) {
         const col = client.db(dbName).collection('rates');
         let query = {};
         query['current_time_stamp'] = {'$gte': timestamp};
         query[searchRate] = {$exists: true};
-        rez = col.findOne(query, function (err, document) {
+        col.findOne(query, function (err, document) {
             calback(document);
         });
         client.close();
@@ -201,7 +151,7 @@ function getRateByTime(searchRate, timestamp, calback) {
 }
 
 /* GET home page. */
-router.get('/data.json', function (req, res, next) {
+router.get('/data.json', function (req, res) {
     let EURBTCdata = [];
     let BTCEURdata = [];
     let rates = {};

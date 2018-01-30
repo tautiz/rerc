@@ -1,8 +1,7 @@
 $(document).ready(function () {
     Materialize.updateTextFields()
-    var BTCchart
     $.getJSON('/data.json', function (data) {
-        BTCchart = Highcharts.chart('container', {
+        Highcharts.chart('container', {
             chart: {
                 type: 'spline',
                 zoomType: 'x'
@@ -88,12 +87,12 @@ $(document).ready(function () {
 
 let app = angular.module('rercApp', [])
 
-app.filter('beforeDigit', function ($filter) {
-    return function (input) {
-        if (input > 1000)
-            return (input % 1000)
-        else
-            if (input < 1000)
-                return input
-    }
-})
+//app.filter('beforeDigit', function ($filter) {
+//    return function (input) {
+//        if (input > 1000)
+//            return (input % 1000)
+//        else
+//            if (input < 1000)
+//                return input
+//    }
+//})
